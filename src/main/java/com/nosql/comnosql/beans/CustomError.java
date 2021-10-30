@@ -1,14 +1,14 @@
 package com.nosql.comnosql.beans;
 
-public class ErrorNOSQL {
+public class CustomError {
     Integer code;
     String description;
 
-    public ErrorNOSQL(){
+    public CustomError(){
 
     }
 
-    public ErrorNOSQL(Integer code, String description) {
+    public CustomError(Integer code, String description) {
         this.code = code;
         this.description = description;
     }

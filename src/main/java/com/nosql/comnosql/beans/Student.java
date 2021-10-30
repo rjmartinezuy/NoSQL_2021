@@ -1,6 +1,21 @@
 package com.nosql.comnosql.beans;
 
+import lombok.Data;
+
+@Data
 public class Student {
+    String name;
+    int age;
+    String registrationNumber;
+    String id;
+
+    public void setId(String id){
+        this.id = id;
+    }
+
+    public String getId(){
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -17,10 +32,6 @@ public class Student {
     public void setRegistrationNumber(String registrationNumber) {
         this.registrationNumber = registrationNumber;
     }
-
-    String name;
-    int age;
-    String registrationNumber;
 
     public int getAge() {
         return age;
