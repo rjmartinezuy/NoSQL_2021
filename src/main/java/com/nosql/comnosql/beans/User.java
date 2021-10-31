@@ -10,7 +10,7 @@ public class User {
     String password;
     String name;
     String lastname;
-    ArrayList<String> role;
+    ArrayList<String> roles;
     String id;
 
     public String getId(){
@@ -54,10 +54,10 @@ public class User {
     }
 
     public ArrayList<String> getRole() {
-        return role;
+        return roles;
     }
 
-    public void setRole(ArrayList<String> role) {
-        this.role = role;
+    public void setRole(ArrayList<String> roles) {
+        this.roles = roles;
     }
 }

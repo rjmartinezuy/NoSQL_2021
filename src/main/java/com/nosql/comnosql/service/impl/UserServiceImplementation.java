@@ -50,7 +50,6 @@ public class UserServiceImplementation implements UserService {
 
         ApiFuture<WriteResult> writeResultApiFuture = getUserCollection().document(user.getEmail()).create(docData);
 
-
         try {
             if(writeResultApiFuture.get() != null){
                 return new CustomError(200, "Usuario agregado");
@@ -62,28 +61,34 @@ public class UserServiceImplementation implements UserService {
     }
 
     public CustomError addRole(String email, RoleUpdater updateRole){
-        System.out.println(email + ' ' + updateRole.getRole() + " " + updateRole.getPassword());
         Query query = getUserCollection().whereEqualTo("email", email);
 
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
         try {
-
             for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
                 if (document != null && document.exists()) {
-                    System.out.println(document.getId());
+
                     User user = document.toObject(User.class);
-                    /*if(!validateUser(email, updateRole.getPassword())){
-                        return new CustomError(104, "Password not correct");
-                    }*/
+
                     if(!user.getPassword().equals(updateRole.getPassword())){
                         return new CustomError(104, "Password not correct");
                     }
-                    /*ArrayList<String> roles = user.getRole();
-                    if(roles.isEmpty() || !roles.contains(updateRole.getRole())){
+
+                    ArrayList<String> roles = user.getRole();
+                    if(roles == null){
+                        System.out.println("Enter" + roles);
+                        roles = new ArrayList<String>();
                         roles.add(updateRole.getRole());
-                        return new CustomError(0, "Role added!");
-                    }*/
-                    return new CustomError(100, "Test exists");
+                    }
+                    else if(!roles.contains(updateRole.getRole())){
+                        roles.add(updateRole.getRole());
+                    }
+
+                    DocumentReference doc = getUserCollection().document(document.getId());
+                    ApiFuture<WriteResult> future = doc.update("roles", roles);
+                    WriteResult result = future.get();
+                    System.out.println("Write result: " + result);
+                    return new CustomError(0, "Role added!");
                 }
                 return new CustomError(102, "User Not exists");
             }
