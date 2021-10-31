@@ -1,11 +1,9 @@
 package com.nosql.comnosql.service.impl;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.QuerySnapshot;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import com.nosql.comnosql.beans.CustomError;
+import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
 import com.nosql.comnosql.firebase.FireBaseInitializer;
 import com.nosql.comnosql.service.UserService;
@@ -63,7 +61,61 @@ public class UserServiceImplementation implements UserService {
         }
     }
 
-    public CollectionReference getUserCollection(){
+    public CustomError addRole(String email, RoleUpdater updateRole){
+        System.out.println(email + ' ' + updateRole.getRole() + " " + updateRole.getPassword());
+        Query query = getUserCollection().whereEqualTo("email", email);
+
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        try {
+
+            for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
+                if (document != null && document.exists()) {
+                    System.out.println(document.getId());
+                    User user = document.toObject(User.class);
+                    /*if(!validateUser(email, updateRole.getPassword())){
+                        return new CustomError(104, "Password not correct");
+                    }*/
+                    if(!user.getPassword().equals(updateRole.getPassword())){
+                        return new CustomError(104, "Password not correct");
+                    }
+                    /*ArrayList<String> roles = user.getRole();
+                    if(roles.isEmpty() || !roles.contains(updateRole.getRole())){
+                        roles.add(updateRole.getRole());
+                        return new CustomError(0, "Role added!");
+                    }*/
+                    return new CustomError(100, "Test exists");
+                }
+                return new CustomError(102, "User Not exists");
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return new CustomError(100, "Test");
+    }
+
+    private CollectionReference getUserCollection(){
         return firebase.getFirestore().collection("users");
+    }
+
+    public Boolean validateUser(String email, String password){
+        Query query = getUserCollection()
+                .whereEqualTo("email", email).whereEqualTo("password", password);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        try {
+            for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
+                if (document != null && document.exists()) {
+                    return Boolean.TRUE;
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return Boolean.FALSE;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return Boolean.FALSE;
+        }
+        return Boolean.FALSE;
     }
 }

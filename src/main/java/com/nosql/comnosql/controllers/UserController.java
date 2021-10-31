@@ -1,6 +1,7 @@
 package com.nosql.comnosql.controllers;
 
 import com.nosql.comnosql.beans.CustomError;
+import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
 import com.nosql.comnosql.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,11 @@ public class UserController {
     @GetMapping(value = "/list")
     public ResponseEntity list(){
         return new ResponseEntity(uservice.list(), HttpStatus.OK);
+    }
+
+    @PutMapping(value="/role/{email}")
+    public CustomError addRole(@PathVariable(value="email") String email, @RequestBody RoleUpdater data){
+        return uservice.addRole(email, data);
     }
 
 }
