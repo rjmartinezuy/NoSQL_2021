@@ -4,10 +4,13 @@ import com.nosql.comnosql.beans.CustomError;
 import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
 import com.nosql.comnosql.service.UserService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value="/v1/user")
@@ -30,6 +33,12 @@ public class UserController {
     @PutMapping(value="/role/{email}")
     public CustomError addRole(@PathVariable(value="email") String email, @RequestBody RoleUpdater data){
         return uservice.addRole(email, data);
+    }
+
+    @GetMapping(value = "/auth")
+    public JSONObject validateUser(@RequestBody User user){
+        return uservice.validateUser(user.getEmail(), user.getPassword());
+        //return new ResponseEntity(uservice.add(user), HttpStatus.OK);
     }
 
 }

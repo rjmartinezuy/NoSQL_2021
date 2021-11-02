@@ -6,7 +6,9 @@ import com.nosql.comnosql.beans.CustomError;
 import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
 import com.nosql.comnosql.firebase.FireBaseInitializer;
+import com.nosql.comnosql.service.CustomErrorService;
 import com.nosql.comnosql.service.UserService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ public class UserServiceImplementation implements UserService {
 
     @Autowired
     private FireBaseInitializer firebase;
+    private CustomErrorService customErrorService;
 
     @Override
     public List<User> list(){
@@ -42,22 +45,29 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public CustomError add(User user){
-        Map<String, Object> docData = new HashMap<>();
-        docData.put("name", user.getName());
-        docData.put("lastname", user.getName());
-        docData.put("email", user.getEmail());
-        docData.put("password", user.getPassword());
+        CustomError error = new CustomError();
+        String email = user.getEmail();
+        if (this.find(email) != null) {
+            error = new CustomError(101, "Usuario ya existe");
+        }else{
+            error = new CustomError(500, "Usuario no pudo agregarse. Reintente más tarde");
 
-        ApiFuture<WriteResult> writeResultApiFuture = getUserCollection().document(user.getEmail()).create(docData);
+            Map<String, Object> docData = new HashMap<>();
+            docData.put("name", user.getName());
+            docData.put("lastname", user.getLastname());
+            docData.put("email", user.getEmail());
+            docData.put("password", user.getPassword());
 
-        try {
-            if(writeResultApiFuture.get() != null){
-                return new CustomError(200, "Usuario agregado");
+            ApiFuture<WriteResult> writeResultApiFuture = getUserCollection().document(user.getEmail()).create(docData);
+
+            try {
+                if(writeResultApiFuture.get() != null){
+                    error = new CustomError(200, "Usuario agregado");
+                }
+            } catch (Exception e) {
             }
-            return new CustomError(500, "Usuario no pudo agregarse. Reintente más tarde");
-        } catch (ExecutionException | InterruptedException e) {
-            return new CustomError(101, "Usuario no pudo agregarse. Reintente más tarde");
         }
+        return error;
     }
 
     public CustomError addRole(String email, RoleUpdater updateRole){
@@ -100,27 +110,47 @@ public class UserServiceImplementation implements UserService {
         return new CustomError(100, "Test");
     }
 
+    public User find(String email){
+        ApiFuture<DocumentSnapshot> documentSnapshotApiFuture  = getUserCollection().document(email).get();
+
+        try{
+            DocumentSnapshot doc = documentSnapshotApiFuture.get();
+            if (doc.exists()){
+                return doc.toObject(User.class);
+            }
+        }catch(Exception e){
+            return null;
+        }
+        return null;
+    }
+
     private CollectionReference getUserCollection(){
         return firebase.getFirestore().collection("users");
     }
 
-    public Boolean validateUser(String email, String password){
+    @Override
+    public JSONObject validateUser(String email, String password){
+
         Query query = getUserCollection()
                 .whereEqualTo("email", email).whereEqualTo("password", password);
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        return new JSONObject(querySnapshot);
+        /*
         try {
             for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
                 if (document != null && document.exists()) {
-                    return Boolean.TRUE;
+                    return new JSONObject(Boolean.TRUE);
                 }
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-            return Boolean.FALSE;
+            return new JSONObject(Boolean.FALSE);
         } catch (ExecutionException e) {
             e.printStackTrace();
-            return Boolean.FALSE;
+            return new JSONObject(Boolean.FALSE);
         }
-        return Boolean.FALSE;
+        return new JSONObject(Boolean.FALSE);
+
+         */
     }
 }
