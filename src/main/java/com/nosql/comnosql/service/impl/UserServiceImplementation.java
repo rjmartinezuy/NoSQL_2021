@@ -110,7 +110,12 @@ public class UserServiceImplementation implements UserService {
         return new CustomError(100, "Test");
     }
 
-    public User find(String email){
+    @Override
+    public JSONObject authorize(String email, String password){
+        return new JSONObject(this.validateUser(email, password));
+    }
+
+    private User find(String email){
         ApiFuture<DocumentSnapshot> documentSnapshotApiFuture  = getUserCollection().document(email).get();
 
         try{
@@ -128,29 +133,22 @@ public class UserServiceImplementation implements UserService {
         return firebase.getFirestore().collection("users");
     }
 
-    @Override
-    public JSONObject validateUser(String email, String password){
+    private Boolean validateUser(String email, String password){
+        User usuario = this.find(email);
 
-        Query query = getUserCollection()
-                .whereEqualTo("email", email).whereEqualTo("password", password);
-        ApiFuture<QuerySnapshot> querySnapshot = query.get();
-        return new JSONObject(querySnapshot);
-        /*
-        try {
-            for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-                if (document != null && document.exists()) {
-                    return new JSONObject(Boolean.TRUE);
-                }
+        System.out.println(usuario.getName());
+
+        if (usuario == null){
+            System.out.println("no existe usuario");
+            return Boolean.FALSE;
+        }else {
+            String uPassword = usuario.getPassword();
+            if(uPassword.equals(password)) {
+                System.out.println("clave correcta");
+                return Boolean.TRUE;
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return new JSONObject(Boolean.FALSE);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            return new JSONObject(Boolean.FALSE);
+            System.out.println("clave incorrecta: " + uPassword + "<>" + password);
+            return Boolean.FALSE;
         }
-        return new JSONObject(Boolean.FALSE);
-
-         */
     }
 }

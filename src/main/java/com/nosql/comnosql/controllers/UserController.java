@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.Produces;
 import java.util.List;
 
 @RestController
@@ -36,8 +37,8 @@ public class UserController {
     }
 
     @GetMapping(value = "/auth")
-    public JSONObject validateUser(@RequestBody User user){
-        return uservice.validateUser(user.getEmail(), user.getPassword());
+    public JSONObject authorize(@RequestBody User user){
+        return uservice.authorize(user.getEmail(), user.getPassword());
         //return new ResponseEntity(uservice.add(user), HttpStatus.OK);
     }
 
