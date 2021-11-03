@@ -133,22 +133,17 @@ public class UserServiceImplementation implements UserService {
         return firebase.getFirestore().collection("users");
     }
 
-    private Boolean validateUser(String email, String password){
+    private CustomError validateUser(String email, String password){
         User usuario = this.find(email);
 
-        System.out.println(usuario.getName());
-
         if (usuario == null){
-            System.out.println("no existe usuario");
-            return Boolean.FALSE;
+            return new CustomError(102, "Usuario no existe");
         }else {
             String uPassword = usuario.getPassword();
             if(uPassword.equals(password)) {
-                System.out.println("clave correcta");
-                return Boolean.TRUE;
+                return null;
             }
-            System.out.println("clave incorrecta: " + uPassword + "<>" + password);
-            return Boolean.FALSE;
+            return new CustomError(104, "Contraseña no válida");
         }
     }
 }
