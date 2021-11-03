@@ -48,9 +48,11 @@ public class UserServiceImplementation implements UserService {
         CustomError error = new CustomError();
         String email = user.getEmail();
         if (this.find(email) != null) {
-            error = new CustomError(101, "Usuario ya existe");
+            error.setCode(101);
+            error.setDescription("Usuario ya existe");
         }else{
-            error = new CustomError(500, "Usuario no pudo agregarse. Reintente más tarde");
+            error.setCode(500);
+            error.setDescription("Usuario no pudo agregarse. Reintente más tarde");
 
             Map<String, Object> docData = new HashMap<>();
             docData.put("name", user.getName());
@@ -62,7 +64,8 @@ public class UserServiceImplementation implements UserService {
 
             try {
                 if(writeResultApiFuture.get() != null){
-                    error = new CustomError(200, "Usuario agregado");
+                    error.setCode(200);
+                    error.setDescription("Usuario agregado");
                 }
             } catch (Exception e) {
             }
@@ -111,8 +114,12 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public JSONObject authorize(String email, String password){
-        return new JSONObject(this.validateUser(email, password));
+    public String authorize(String email, String password){
+        if (this.validateUser(email, password) == null){
+            return "{\"auth\": true}";
+        } else {
+            return "{\"auth\": false}";
+        }
     }
 
     private User find(String email){

@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/auth")
-    public JSONObject authorize(@RequestBody User user){
+    public String authorize(@RequestBody User user){
         return uservice.authorize(user.getEmail(), user.getPassword());
         //return new ResponseEntity(uservice.add(user), HttpStatus.OK);
     }

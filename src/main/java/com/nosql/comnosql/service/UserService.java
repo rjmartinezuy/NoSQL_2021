@@ -15,5 +15,5 @@ public interface UserService {
 
     CustomError addRole(String email, RoleUpdater request);
 
-    JSONObject authorize(String email, String password);
+    String authorize(String email, String password);
 }
