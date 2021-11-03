@@ -1,8 +1,10 @@
 package com.nosql.comnosql.beans;
 
+import java.util.ArrayList;
+
 public class RoleUpdater {
     String password;
-    String role;
+    ArrayList<String> roles;
 
     public String getPassword() {
         return password;
@@ -12,11 +14,11 @@ public class RoleUpdater {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
+    public ArrayList<String> getRoles() {
+        return roles;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRole(ArrayList<String> roles) {
+        this.roles = roles;
     }
 }

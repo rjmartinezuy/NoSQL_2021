@@ -12,10 +12,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -86,12 +83,15 @@ public class UserServiceImplementation implements UserService {
 
                     ArrayList<String> roles = user.getRole();
                     if(roles == null){
-                        System.out.println("Enter" + roles);
                         roles = new ArrayList<String>();
-                        roles.add(updateRole.getRole());
+                        for(String role: updateRole.getRoles()){
+                            roles.add(role);
+                        }
                     }
-                    else if(!roles.contains(updateRole.getRole())){
-                        roles.add(updateRole.getRole());
+                    else if(!roles.contains(updateRole.getRoles())){
+                        for(String role: updateRole.getRoles()){
+                            roles.add(role);
+                        }
                     }
 
                     DocumentReference doc = getUserCollection().document(document.getId());
@@ -108,6 +108,60 @@ public class UserServiceImplementation implements UserService {
             e.printStackTrace();
         }
         return new CustomError(100, "Test");
+    }
+
+    public CustomError deleteRole(String email, RoleUpdater userData){
+        User user = this.find(email);
+
+        if(user != null){
+            ArrayList<String> currentRoles = user.getRoles();
+            ArrayList<String> toDelete = new ArrayList<>();
+            ArrayList<String> roles = userData.getRoles();
+            int index = 0;
+            boolean must_delete = true;
+            while (index < roles.size() && must_delete) {
+                String role = roles.get(index);
+                if(!currentRoles.contains(role)){
+                    must_delete = false;
+                }
+                else{
+                    index++;
+                    toDelete.add(role);
+                }
+            }
+            if(!must_delete){
+                return new CustomError(103, "No pudo eliminarse " + roles.get(index) + "ya que no está asociado al usuario");
+            }
+            for(String role: toDelete){
+                currentRoles.remove(role);
+            }
+            DocumentReference doc = getUserCollection().document(email);
+            ApiFuture<WriteResult> future = doc.update("roles", currentRoles);
+            WriteResult result = null;
+            try {
+                result = future.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Write result: " + result);
+            return new CustomError(0, "Role added!");
+
+        }
+        /*User u = this.find(userData.getEmail());
+        ArrayList<String> currentRoles = u.getRoles();
+        ArrayList<String> toDelete = new ArrayList<>();
+
+        for(String role : userData.getRoles()){
+            if(currentRoles.contains(role)){
+                toDelete.add(role);
+            }
+            else{
+                return new CustomError(103, "No pudo eliminarse " + role + "ya que no está asociado al usuario");
+            }
+        }*/
+        return new CustomError(0, "Test");
     }
 
     public User find(String email){

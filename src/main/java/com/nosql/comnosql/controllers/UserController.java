@@ -35,6 +35,11 @@ public class UserController {
         return uservice.addRole(email, data);
     }
 
+    @DeleteMapping(value="/role/{email}")
+    public CustomError deleteRole(@PathVariable(value="email") String email, @RequestBody RoleUpdater user){
+        return uservice.deleteRole(email, user);
+    }
+
     @GetMapping(value = "/auth")
     public JSONObject validateUser(@RequestBody User user){
         return uservice.validateUser(user.getEmail(), user.getPassword());
