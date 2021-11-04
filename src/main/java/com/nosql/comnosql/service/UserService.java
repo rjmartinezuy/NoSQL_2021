@@ -20,6 +20,7 @@ public interface UserService {
 
     User find(String email);
 
-    JSONObject validateUser(String email, String password);
+    boolean validateUser(String email, String password);
 
+    String authorize(String email, String password);
 }
