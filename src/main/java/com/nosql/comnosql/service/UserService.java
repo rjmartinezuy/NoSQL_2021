@@ -1,5 +1,6 @@
 package com.nosql.comnosql.service;
 
+import com.nosql.comnosql.beans.Authenticate;
 import com.nosql.comnosql.beans.CustomError;
 import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
@@ -20,7 +21,5 @@ public interface UserService {
 
     User find(String email);
 
-    boolean validateUser(String email, String password);
-
-    String authorize(String email, String password);
+    Authenticate authorize(String email, String password);
 }

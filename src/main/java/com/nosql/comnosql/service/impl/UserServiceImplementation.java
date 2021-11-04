@@ -2,6 +2,7 @@ package com.nosql.comnosql.service.impl;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
+import com.nosql.comnosql.beans.Authenticate;
 import com.nosql.comnosql.beans.CustomError;
 import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
@@ -72,6 +73,7 @@ public class UserServiceImplementation implements UserService {
         return error;
     }
 
+    @Override
     public CustomError addRole(String email, RoleUpdater updateRole){
         if(!validateUser(email, updateRole.getPassword())){
             return this.error_code;
@@ -115,6 +117,7 @@ public class UserServiceImplementation implements UserService {
         return new CustomError(100, "Test");
     }
 
+    @Override
     public CustomError deleteRole(String email, RoleUpdater userData){
         if(!validateUser(email, userData.getPassword())){
             return this.error_code;
@@ -163,15 +166,11 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public String authorize(String email, String password){
-        /*if (this.validateUser(email, password) == null){
-            return "{\"auth\": true}";
-        } else {
-            return "{\"auth\": false}";
-        }*/
-        return "{\"auth\": "+this.validateUser(email, password)+"}";
+    public Authenticate authorize(String email, String password){
+        return new Authenticate(this.validateUser(email, password));
     }
 
+    @Override
     public User find(String email){
         ApiFuture<DocumentSnapshot> documentSnapshotApiFuture  = getUserCollection().document(email).get();
         try{
@@ -200,14 +199,5 @@ public class UserServiceImplementation implements UserService {
             return false;
         }
         return true;
-        /*if (usuario == null){
-            return new CustomError(102, "Usuario no existe");
-        }else {
-            String uPassword = usuario.getPassword();
-            if(uPassword.equals(password)) {
-                return null;
-            }
-            return new CustomError(104, "Contraseña no válida");
-        }*/
     }
 }
