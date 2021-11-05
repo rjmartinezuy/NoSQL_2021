@@ -2,6 +2,7 @@ package com.nosql.comnosql.service.impl;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
+import com.nosql.comnosql.beans.Authenticate;
 import com.nosql.comnosql.beans.CustomError;
 import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
@@ -12,14 +13,13 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserServiceImplementation implements UserService {
+
+    private CustomError error_code;
 
     @Autowired
     private FireBaseInitializer firebase;
@@ -73,58 +73,106 @@ public class UserServiceImplementation implements UserService {
         return error;
     }
 
+    @Override
     public CustomError addRole(String email, RoleUpdater updateRole){
-        Query query = getUserCollection().whereEqualTo("email", email);
-
-        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        if(!validateUser(email, updateRole.getPassword())){
+            return this.error_code;
+        }
         try {
-            for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-                if (document != null && document.exists()) {
+            DocumentReference doc = getUserCollection().document(email);
+            DocumentSnapshot document = doc.get().get();
+            if (document.exists()) {
+                User user = document.toObject(User.class);
 
-                    User user = document.toObject(User.class);
-
-                    if(!user.getPassword().equals(updateRole.getPassword())){
-                        return new CustomError(104, "Password not correct");
+                ArrayList<String> roles = user.getRole();
+                boolean added = false;
+                if(roles == null){
+                    roles = new ArrayList<String>();
+                    for(String role: updateRole.getRoles()){
+                        roles.add(role);
                     }
-
-                    ArrayList<String> roles = user.getRole();
-                    if(roles == null){
-                        System.out.println("Enter" + roles);
-                        roles = new ArrayList<String>();
-                        roles.add(updateRole.getRole());
+                }
+                else{
+                    for(String role: updateRole.getRoles()){
+                        if(!roles.contains(role)){
+                            roles.add(role);
+                            added = true;
+                        }
                     }
-                    else if(!roles.contains(updateRole.getRole())){
-                        roles.add(updateRole.getRole());
-                    }
+                }
 
-                    DocumentReference doc = getUserCollection().document(document.getId());
+                if(added){
+                    //DocumentReference doc = getUserCollection().document(document.getId());
                     ApiFuture<WriteResult> future = doc.update("roles", roles);
                     WriteResult result = future.get();
                     System.out.println("Write result: " + result);
                     return new CustomError(0, "Role added!");
                 }
-                return new CustomError(102, "User Not exists");
+                return null;
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+            return new CustomError(102, "User Not exists");
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return new CustomError(100, "Test");
     }
 
     @Override
-    public String authorize(String email, String password){
-        if (this.validateUser(email, password) == null){
-            return "{\"auth\": true}";
-        } else {
-            return "{\"auth\": false}";
+    public CustomError deleteRole(String email, RoleUpdater userData){
+        if(!validateUser(email, userData.getPassword())){
+            return this.error_code;
         }
+        DocumentReference doc = getUserCollection().document(email);
+        DocumentSnapshot document = null;
+        try {
+            document = doc.get().get();
+            if(document.exists()){
+                User user = document.toObject(User.class);
+                ArrayList<String> currentRoles = user.getRoles();
+                ArrayList<String> toDelete = new ArrayList<>();
+                ArrayList<String> roles = userData.getRoles();
+                int index = 0;
+                boolean must_delete = true;
+                while (index < roles.size() && must_delete) {
+                    String role = roles.get(index);
+                    if(!currentRoles.contains(role)){
+                        must_delete = false;
+                    }
+                    else{
+                        index++;
+                        toDelete.add(role);
+                    }
+                }
+                if(!must_delete){
+                    return new CustomError(103, "No pudo eliminarse " + roles.get(index) + "ya que no está asociado al usuario");
+                }
+                for(String role: toDelete){
+                    currentRoles.remove(role);
+                }
+                //DocumentReference doc = getUserCollection().document(email);
+                ApiFuture<WriteResult> future = doc.update("roles", currentRoles);
+                WriteResult result = null;
+                try {
+                    result = future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+                return new CustomError(0, "Role deleted!");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return new CustomError(102, "User Not exists");
     }
 
-    private User find(String email){
-        ApiFuture<DocumentSnapshot> documentSnapshotApiFuture  = getUserCollection().document(email).get();
+    @Override
+    public Authenticate authorize(String email, String password){
+        return new Authenticate(this.validateUser(email, password));
+    }
 
+    @Override
+    public User find(String email){
+        ApiFuture<DocumentSnapshot> documentSnapshotApiFuture  = getUserCollection().document(email).get();
         try{
             DocumentSnapshot doc = documentSnapshotApiFuture.get();
             if (doc.exists()){
@@ -140,17 +188,16 @@ public class UserServiceImplementation implements UserService {
         return firebase.getFirestore().collection("users");
     }
 
-    private CustomError validateUser(String email, String password){
-        User usuario = this.find(email);
-
-        if (usuario == null){
-            return new CustomError(102, "Usuario no existe");
-        }else {
-            String uPassword = usuario.getPassword();
-            if(uPassword.equals(password)) {
-                return null;
-            }
-            return new CustomError(104, "Contraseña no válida");
+    public boolean validateUser(String email, String password){
+        User user = this.find(email);
+        if(user == null) {
+            this.error_code = new CustomError(102, "User do not exist");
+            return false;
         }
+        if(!user.getPassword().equals(password)){
+            this.error_code = new CustomError(104, "Password incorrect");
+            return false;
+        }
+        return true;
     }
 }

@@ -1,5 +1,6 @@
 package com.nosql.comnosql.controllers;
 
+import com.nosql.comnosql.beans.Authenticate;
 import com.nosql.comnosql.beans.CustomError;
 import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
@@ -31,13 +32,20 @@ public class UserController {
         return new ResponseEntity(uservice.list(), HttpStatus.OK);
     }
 
-    @PutMapping(value="/role/{email}")
-    public CustomError addRole(@PathVariable(value="email") String email, @RequestBody RoleUpdater data){
-        return uservice.addRole(email, data);
+    @PutMapping(value="/role")
+    public CustomError addRole(@RequestBody RoleUpdater data){
+        return uservice.addRole(data.getEmail(), data);
     }
 
-    @GetMapping(value = "/auth")
-    public String authorize(@RequestBody User user){
+    @DeleteMapping(value="/role/delete")
+    public CustomError deleteRole(@RequestBody RoleUpdater user){
+        return uservice.deleteRole(user.getEmail(), user);
+    }
+
+    @PostMapping(value = "/auth")
+    public Authenticate authorize(@RequestBody User user){
+        //System.out.println(user.getEmail());
+        //return "";
         return uservice.authorize(user.getEmail(), user.getPassword());
         //return new ResponseEntity(uservice.add(user), HttpStatus.OK);
     }
