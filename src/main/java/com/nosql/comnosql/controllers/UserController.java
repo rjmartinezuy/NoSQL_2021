@@ -4,6 +4,7 @@ import com.nosql.comnosql.beans.Authenticate;
 import com.nosql.comnosql.beans.CustomError;
 import com.nosql.comnosql.beans.RoleUpdater;
 import com.nosql.comnosql.beans.User;
+import com.nosql.comnosql.service.CustomErrorService;
 import com.nosql.comnosql.service.UserService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
