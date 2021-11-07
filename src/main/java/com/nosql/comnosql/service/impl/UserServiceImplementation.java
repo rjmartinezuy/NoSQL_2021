@@ -19,10 +19,11 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class UserServiceImplementation implements UserService {
 
-    private CustomError error_code;
+    private CustomError error_code = new CustomError();
 
     @Autowired
     private FireBaseInitializer firebase;
+    @Autowired
     private CustomErrorService customErrorService;
 
     @Override
@@ -45,15 +46,11 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public CustomError add(User user){
-        CustomError error = new CustomError();
         String email = user.getEmail();
         if (this.find(email) != null) {
-            error.setCode(101);
-            error.setDescription("Usuario ya existe");
+            this.error_code = customErrorService.find(101);
         }else{
-            error.setCode(500);
-            error.setDescription("Usuario no pudo agregarse. Reintente más tarde");
-
+            error_code = customErrorService.find(500);
             Map<String, Object> docData = new HashMap<>();
             docData.put("name", user.getName());
             docData.put("lastname", user.getLastname());
@@ -64,13 +61,12 @@ public class UserServiceImplementation implements UserService {
 
             try {
                 if(writeResultApiFuture.get() != null){
-                    error.setCode(200);
-                    error.setDescription("Usuario agregado");
+                    this.error_code = customErrorService.find(200);
                 }
             } catch (Exception e) {
             }
         }
-        return error;
+        return this.error_code;
     }
 
     @Override
@@ -105,16 +101,15 @@ public class UserServiceImplementation implements UserService {
                     //DocumentReference doc = getUserCollection().document(document.getId());
                     ApiFuture<WriteResult> future = doc.update("roles", roles);
                     WriteResult result = future.get();
-                    System.out.println("Write result: " + result);
-                    return new CustomError(0, "Role added!");
+                    return customErrorService.find(0);
                 }
                 return null;
             }
-            return new CustomError(102, "User Not exists");
+            return customErrorService.find(102);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return new CustomError(100, "Test");
+        return customErrorService.find(100);
     }
 
     @Override
@@ -126,6 +121,7 @@ public class UserServiceImplementation implements UserService {
         DocumentSnapshot document = null;
         try {
             document = doc.get().get();
+            System.out.println(document.exists());
             if(document.exists()){
                 User user = document.toObject(User.class);
                 ArrayList<String> currentRoles = user.getRoles();
@@ -144,7 +140,10 @@ public class UserServiceImplementation implements UserService {
                     }
                 }
                 if(!must_delete){
-                    return new CustomError(103, "No pudo eliminarse " + roles.get(index) + "ya que no está asociado al usuario");
+                    this.error_code = customErrorService.find(103);
+                    String desc = String.format(this.error_code.getDescription(), roles.get(index));
+                    this.error_code.setDescription(desc);
+                    return this.error_code;
                 }
                 for(String role: toDelete){
                     currentRoles.remove(role);
@@ -157,12 +156,12 @@ public class UserServiceImplementation implements UserService {
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
-                return new CustomError(0, "Role deleted!");
+                return customErrorService.find(0);
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return new CustomError(102, "User Not exists");
+        return customErrorService.find(102);
     }
 
     @Override
@@ -191,11 +190,11 @@ public class UserServiceImplementation implements UserService {
     public boolean validateUser(String email, String password){
         User user = this.find(email);
         if(user == null) {
-            this.error_code = new CustomError(102, "User do not exist");
+            this.error_code = customErrorService.find(102);
             return false;
         }
         if(!user.getPassword().equals(password)){
-            this.error_code = new CustomError(104, "Password incorrect");
+            this.error_code = customErrorService.find(104);
             return false;
         }
         return true;

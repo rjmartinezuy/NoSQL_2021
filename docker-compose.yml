@@ -1,0 +1,7 @@
+version: '3.3'
+services:
+  nest-api:
+    image: spring-nosql #nombre de la imagen que hemos creado
+    container_name: spring-nosql
+    ports:
+      - '8083:8083'
