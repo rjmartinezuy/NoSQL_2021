@@ -56,6 +56,7 @@ public class UserServiceImplementation implements UserService {
             docData.put("lastname", user.getLastname());
             docData.put("email", user.getEmail());
             docData.put("password", user.getPassword());
+            docData.put("roles", new ArrayList<String>());
 
             ApiFuture<WriteResult> writeResultApiFuture = getUserCollection().document(user.getEmail()).create(docData);
 
@@ -79,7 +80,6 @@ public class UserServiceImplementation implements UserService {
             DocumentSnapshot document = doc.get().get();
             if (document.exists()) {
                 User user = document.toObject(User.class);
-
                 ArrayList<String> roles = user.getRole();
                 boolean added = false;
                 if(roles == null){
