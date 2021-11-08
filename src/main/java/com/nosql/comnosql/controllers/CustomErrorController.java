@@ -19,10 +19,17 @@ public class CustomErrorController {
         return new ResponseEntity(service.list(), HttpStatus.OK);
     }
 
+    /*
     @PostMapping(value = "/add")
     public ResponseEntity add(@RequestBody CustomError error){
 
         return new ResponseEntity(service.add(error), HttpStatus.OK);
+    }
+
+     */
+    @PostMapping(value = "/init")
+    public ResponseEntity initialize(){
+        return new ResponseEntity(service.initialize(), HttpStatus.OK);
     }
 
     @PutMapping(value = "/update")
