@@ -32,18 +32,51 @@ public class CustomErrorServiceImpl implements CustomErrorService {
             }
             return errores;
         }catch(Exception e){
+            System.out.println(e.getMessage());
             return null;
         }
     }
 
     @Override
-    public Boolean add(CustomError error) {
-        Map<String, Object> docErrores = getDocData(error);
+    public Boolean initialize(){
+        Boolean ok = true;
+        String description;
+        for (int code = 100; code <= 500 && ok; code++) {
+            switch(code){
+                case 100: description = "Solicitud completada";
+                    ok = getOk(description, code);
+                    break;
+                case 101: description = "Usuario ya existe";
+                    ok = getOk(description, code);
+                    break;
+                case 102: description = "Usuario no existe";
+                    ok = getOk(description, code);
+                    break;
+                case 103: description = "Rol %s no pertenece al usuario";
+                    ok = getOk(description, code);
+                    break;
+                case 104: description = "Contraseña no válida";
+                    ok = getOk(description, code);
+                    break;
+                case 200: description = "Usuario agregado";
+                    ok = getOk(description, code);
+                    break;
+                case 500: description = "Usuario no pudo agregarse. Reintente más tarde";
+                    ok = getOk(description, code);
+                    break;
+            }
+        }
 
-        ApiFuture<WriteResult> writeResultApiFuture = getCollection().document(String.valueOf(error.getCode())).create(error);
-        return getaBoolean(writeResultApiFuture);
-
+        return ok;
     }
+
+    private Boolean getOk(String description, int code) {
+        Boolean ok;
+        CustomError error = new CustomError(code, description);
+        ok = add(error);
+        return ok;
+    }
+
 
     @Override
     public Boolean edit(int code, CustomError error) {
@@ -66,14 +99,11 @@ public class CustomErrorServiceImpl implements CustomErrorService {
         try{
             DocumentSnapshot doc = documentSnapshotApiFuture.get();
             if (doc.exists()){
-                System.out.println("Encontré mensaje con código " + code);
                 return doc.toObject(CustomError.class);
             }
         }catch(Exception e){
-            System.out.println("Excepción buscando código " + code);
             return null;
         }
-        System.out.println("No existe mensaje con código " + code);
         return null;
     }
 
@@ -97,5 +127,15 @@ public class CustomErrorServiceImpl implements CustomErrorService {
         } catch (Exception e) {
             return Boolean.FALSE;
         }
+    }
+
+    private Boolean add(CustomError error) {
+        Map<String, Object> docErrores = getDocData(error);
+        Boolean ok = false;
+        if (error.getCode() != 0) {
+            ApiFuture<WriteResult> writeResultApiFuture = getCollection().document(String.valueOf(error.getCode())).create(error);
+            ok = getaBoolean(writeResultApiFuture);
+        }
+        return ok;
     }
 }

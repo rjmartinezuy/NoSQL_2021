@@ -8,11 +8,11 @@ public interface CustomErrorService {
 
     List<CustomError> list();
 
-    Boolean add(CustomError error);
-
     Boolean edit(int code, CustomError error);
 
     Boolean delete(int code);
 
     CustomError find(int code);
+
+    Boolean initialize();
 }
