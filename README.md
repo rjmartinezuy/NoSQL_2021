@@ -115,15 +115,15 @@ Todos los servicios tienen como url base {host}/v1
 Actualizar en src/main/java/com/nosql/comnosql/firebase/FireBaseInitializer.java la URL a la base de datos en **setDatabaseUrl() **y el nombre con el que se haya guardado la clave en** getResourceAsStream().**
     Generar el archivo jar mediante el comando maven y ejecutarlo. 
     
-    **<span style="text-decoration:underline;">Configuración</span>**
+**<span style="text-decoration:underline;">Configuración</span>**
 
     En el archivo src/main/resources/application.properties se configura el puerto que va a utilizar la aplicación
     
-    **<span style="text-decoration:underline;">Lenguajes</span>**
+ **<span style="text-decoration:underline;">Lenguajes</span>**
     JAVA con Framework SpringBoot
     Maven
     
-    **<span style="text-decoration:underline;">Bases de Datos Utilizadas:</span>**
+ **<span style="text-decoration:underline;">Bases de Datos Utilizadas:</span>**
     **Firebase**
     De acuerdo a la realidad planteada en el Proyecto, el tipo de base de datos NoSQL que debiera utilizarse sería de tipo clave-valor. Al mismo tiempo, debido a la baja complejidad consideramos que también podría utilizarse una base de datos que maneje documentos. Por ello, y debido a que no requiere instalación y se integra fácilmente con el modelo del Proyecto, es que optamos por utilizar Cloud Firestore de Firebase. Adicionalmente la cantidad de documentación y ejemplos facilitan su uso
 
