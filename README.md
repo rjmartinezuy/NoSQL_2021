@@ -32,20 +32,18 @@ Los JSON a usar en el request:
 	"name": string,
 
 	"lastname": "string
-
-}
+	}
 
 **RoleUpdater:**
 
-{
+	{
 
 	"email": string,
 
 	"password": string,
 
 	"roles": String[]
-
-}
+	}
 
 Los JSON posibles como respuesta son:
 
@@ -53,14 +51,11 @@ Los JSON posibles como respuesta son:
 
 	{
 
-
        "code": int,
 
 
        "description": string
-
-
-    }
+       }
 
 **	Authenticate:**
 
@@ -209,3 +204,4 @@ JSON con un campo true o false según corresponda.
 
 
 * **JMeter**:
+	Teniendo una instancia de la aplicación corriendo, puede ejecutarse un JMeter para testing. Guia: https://jmeter.apache.org/
