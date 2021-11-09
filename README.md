@@ -1,20 +1,5 @@
 # NoSQL_2021
 
-Using this Markdown file:
-
-1. Paste this output into your source file.
-2. See the notes and action items below regarding this conversion run.
-3. Check the rendered output (headings, lists, code blocks, tables) for proper
-   formatting and use a linkchecker before you publish this page.
-
-Conversion notes:
-
-* Docs to Markdown version 1.0β31
-* Mon Nov 08 2021 16:07:33 GMT-0800 (PST)
-* Source doc: Documentación Tarea 2
------>
-
-
 **<span style="text-decoration:underline;">Formato de Intercambio de Datos</span>**
 
 El intercambio es realizado mediante peticiones a endpoints y JSON en el Request Body y en el Response Body.
@@ -47,7 +32,7 @@ Los JSON a usar en el request:
 
 Los JSON posibles como respuesta son:
 
-**	CustomError:**
+**CustomError:**
 
 	{
 
@@ -57,7 +42,7 @@ Los JSON posibles como respuesta son:
        "description": string
        }
 
-**	Authenticate:**
+**Authenticate:**
 
 	{
 
@@ -87,7 +72,7 @@ Todos los servicios tienen como url base {host}/v1
 
 	**Request Body:**  JSON de tipo User
 
-**	Descripción:** Se pasará el correo electrónico del usuario a crear, contraseña,
+**Descripción:** Se pasará el correo electrónico del usuario a crear, contraseña,
 
 
     nombre y apellido.El correo debe ser único en el sistema,el sistema genera un
@@ -96,11 +81,11 @@ usuario. En caso de existir el usuario se retornará el error con código 101.
 
 	<span style="text-decoration:underline;">/user/role</span>
 
-**	Método:** PUT
+**Método:** PUT
 
-**	Request Body:** JSON de tipo RoleUpdater
+**Request Body:** JSON de tipo RoleUpdater
 
-**	Descripción:** Dado un identificador de usuario (mail) y contraseña, se
+**Descripción:** Dado un identificador de usuario (mail) y contraseña, se
 
 
     puede agregar una lista de roles al usuario.El rol es un string, como por ejemplo
@@ -116,11 +101,11 @@ usuario. En caso de existir el usuario se retornará el error con código 101.
 
 <span style="text-decoration:underline;">	/role/delete</span>
 
-**	Método:** DELETE
+**Método:** DELETE
 
-**	Request Body:** JSON de tipo RoleUpdater
+**Request Body:** JSON de tipo RoleUpdater
 
-**	Descripción:** Dado un identificador de usuario (mail) y contraseña, se
+**Descripción:** Dado un identificador de usuario (mail) y contraseña, se
 
 
     puede eliminar un conjunto de roles pasando como parámetros una lista de roles del
