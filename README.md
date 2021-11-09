@@ -112,8 +112,7 @@ Todos los servicios tienen como url base {host}/v1
 	
 **<span style="text-decoration:underline;">Instalación</span>**
     Se puede descargar el código fuente del repositorio [https://github.com/rjmartinezuy/NoSQL_2021](https://github.com/rjmartinezuy/NoSQL_2021) Para conectarse al proyecto de Firebase personal, se debe de conseguir una key de firebase (Ver Guia: [https://thepro.io/post/firebase-authentication-for-spring-boot-rest-api-5V](https://thepro.io/post/firebase-authentication-for-spring-boot-rest-api-5V)) y después se debe de guardar la clave en la carpeta **Resources.**
-
-    Actualizar en src/main/java/com/nosql/comnosql/firebase/FireBaseInitializer.java la URL a la base de datos en **setDatabaseUrl() **y el nombre con el que se haya guardado la clave en** getResourceAsStream().**
+Actualizar en src/main/java/com/nosql/comnosql/firebase/FireBaseInitializer.java la URL a la base de datos en **setDatabaseUrl() **y el nombre con el que se haya guardado la clave en** getResourceAsStream().**
     Generar el archivo jar mediante el comando maven y ejecutarlo. 
     
     **<span style="text-decoration:underline;">Configuración</span>**
