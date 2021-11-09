@@ -11,14 +11,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8083/v1/user/list",
+					"raw": "localhost:8083/v1/customerror/list",
 					"host": [
 						"localhost"
 					],
 					"port": "8083",
 					"path": [
 						"v1",
-						"user",
+						"customerror",
 						"list"
 					]
 				}
@@ -62,7 +62,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"jmo.eressea@gmail.com\",\r\n    \"password\":\"ramiro\"\r\n}",
+					"raw": "{\r\n    \"email\":\"usuario@gmail.com\",\r\n    \"password\":\"12345\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -92,7 +92,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"jmo.eressea@gmail.com\",\r\n    \"password\":\"pepito\"\r\n}",
+					"raw": "{\r\n    \"email\":\"usuario@gmail.com\",\r\n    \"password\":\"falso\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

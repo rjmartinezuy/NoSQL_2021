@@ -101,7 +101,7 @@ public class UserServiceImplementation implements UserService {
                     //DocumentReference doc = getUserCollection().document(document.getId());
                     ApiFuture<WriteResult> future = doc.update("roles", roles);
                     WriteResult result = future.get();
-                    return customErrorService.find(0);
+                    return customErrorService.find(100);
                 }
                 return null;
             }
