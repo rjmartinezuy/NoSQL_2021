@@ -141,3 +141,4 @@ Actualizar en src/main/java/com/nosql/comnosql/firebase/FireBaseInitializer.java
 
 * **JMeter**:
 	Teniendo una instancia de la aplicación corriendo, puede ejecutarse un JMeter para testing. Hay algunos ejemplos creados en este repositorio. Guia: https://jmeter.apache.org/
+	Nota: Dentro del folder JMeter se encuentra el plan de pruebas preparado para los casos solicitados.
