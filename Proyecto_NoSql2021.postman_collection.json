@@ -6,19 +6,19 @@
 	},
 	"item": [
 		{
-			"name": "1 - Listar Errores",
+			"name": "1 - Listar Usuarios",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8083/v1/customerror/list",
+					"raw": "localhost:8083/v1/user/list",
 					"host": [
 						"localhost"
 					],
 					"port": "8083",
 					"path": [
 						"v1",
-						"customerror",
+						"user",
 						"list"
 					]
 				}
